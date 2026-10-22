@@ -1,8 +1,8 @@
-// 0.1.17 test build generated from 0.1.16.
+// 0.1.18 test build generated from 0.1.17.
 // ==UserScript==
 // @name         八卦搜索
 // @namespace    theMax24/bagua-search-public
-// @version      0.1.17
+// @version      0.1.18
 // @description  划词搜索、拖拽搜索和自定义快捷功能面板，将常用搜索网站与图片工具集中使用。
 // @author       theMax24
 // @homepageURL  https://github.com/thevip001/bagua-search
@@ -645,7 +645,7 @@ function engineEditor(engine,index=-1){
  }finally{confirm.disabled=false;}});button(p,'取消',()=>{clearTimeout(timer);generation++;showSettings('engines');});
 }
 
-function graphicalSettings(p,onScale=()=>{}){let type='text';const top=el('div',undefined,p);top.className='wheel-editor-top';const tabs=el('div',undefined,top);tabs.className='wheel-types';const buttons=[];for(const[t,n]of [['text','文字'],['link','链接'],['image','图片']]){const b=button(tabs,n,()=>{type=t;buttons.forEach(x=>x.b.classList.toggle('active',x.type===type));draw();});b.classList.toggle('active',t===type);buttons.push({type:t,b});}const zl=el('label','轮盘缩放',top);zl.className='wheel-zoom';const zoom=el('input',undefined,zl);zoom.type='number';zoom.min=50;zoom.max=120;zoom.value=cfg.wheelScale;el('span','%',zl);zoom.oninput=()=>onScale(Math.max(50,Math.min(120,Number(zoom.value)||90)));const area=el('div',undefined,p);function draw(){area.replaceChildren();const row=el('div',undefined,area);row.className='graphrow';const chooser=el('div',undefined,row);chooser.className='chooser';let rendered;const select=(ring,index)=>{chooser.replaceChildren();el('h4',(ring==='Inner'?'内圈':'外圈')+' · '+DIRECTION[index],chooser);const options=type==='image'?['copyImage','imageTools','imageURL','imageSearch','save','decode','ocr','none',...cfg.engines.filter(e=>e.enabled&&e.kind==='image').map(e=>'e:'+e.id)]:['qr','translate','record','share','music','video','engines','general','translations','incognito','open','download','window','none',...cfg.engines.filter(e=>e.enabled&&e.kind!=='image').map(e=>'e:'+e.id)];const dropdown=el('select',undefined,chooser);dropdown.className='wide';for(const id of options){const o=el('option',action(id,{kind:type,value:''}).name,dropdown);o.value=id;}dropdown.value=options.includes(cfg[type+ring][index])?cfg[type+ring][index]:'none';dropdown.onchange=()=>{cfg[type+ring][index]=dropdown.value;rendered.con.remove();rendered=drawWheel(row,type,(r,i)=>select(r,i),null,true);select(ring,index);};el('p','点击轮盘位置选择功能。直接拖拽执行内圈功能');el('p','拖动超过12像素后按方向执行内圈功能，Esc取消。',content).className='muted';panelTriggers(content);el('h4','5、前台打开',content);checkbox('foreground','打开结果后立即切换到新标签页');el('p','不勾选则后台打开，继续停留当前页。外部应用和独立窗口不一定受此选项影响。',content).className='muted';}
+function graphicalSettings(p,onScale=()=>{}){let type='text';const top=el('div',undefined,p);top.className='wheel-editor-top';const tabs=el('div',undefined,top);tabs.className='wheel-types';const buttons=[];for(const[t,n]of [['text','文字'],['link','链接'],['image','图片']]){const b=button(tabs,n,()=>{type=t;buttons.forEach(x=>x.b.classList.toggle('active',x.type===type));draw();});b.classList.toggle('active',t===type);buttons.push({type:t,b});}const zl=el('label','轮盘缩放',top);zl.className='wheel-zoom';const zoom=el('input',undefined,zl);zoom.type='number';zoom.min=50;zoom.max=120;zoom.value=cfg.wheelScale;el('span','%',zl);zoom.oninput=()=>onScale(Math.max(50,Math.min(120,Number(zoom.value)||90)));const area=el('div',undefined,p);function draw(){area.replaceChildren();const row=el('div',undefined,area);row.className='graphrow';const chooser=el('div',undefined,row);chooser.className='chooser';let rendered;const select=(ring,index)=>{chooser.replaceChildren();el('h4',(ring==='Inner'?'内圈':'外圈')+' · '+DIRECTION[index],chooser);const options=type==='image'?['copyImage','imageTools','imageURL','imageSearch','save','decode','ocr','none',...cfg.engines.filter(e=>e.enabled&&e.kind==='image').map(e=>'e:'+e.id)]:['qr','translate','record','share','music','video','engines','general','translations','incognito','open','download','window','none',...cfg.engines.filter(e=>e.enabled&&e.kind!=='image').map(e=>'e:'+e.id)];const dropdown=el('select',undefined,chooser);dropdown.className='wide';for(const id of options){const o=el('option',action(id,{kind:type,value:''}).name,dropdown);o.value=id;}dropdown.value=options.includes(cfg[type+ring][index])?cfg[type+ring][index]:'none';dropdown.onchange=()=>{cfg[type+ring][index]=dropdown.value;rendered.con.remove();rendered=drawWheel(row,type,(r,i)=>select(r,i),null,true);select(ring,index);};el('p','点击轮盘位置选择功能。直接拖拽，执行搜索盘内圈功能');el('p','拖动超过12像素后按方向执行内圈功能，Esc取消。',content).className='muted';panelTriggers(content);el('h4','5、前台打开',content);checkbox('foreground','打开结果后立即切换到新标签页');el('p','不勾选则后台打开，继续停留当前页。外部应用和独立窗口不一定受此选项影响。',content).className='muted';}
 if(tab==='wheel'){let zoom=cfg.wheelScale;graphicalSettings(content,n=>zoom=n);controls.push(()=>cfg.wheelScale=zoom);}
 
 if(tab==='quick')panelSettings(content);
@@ -910,3 +910,132 @@ async function repairEngineIcons(){
 }
 
 })().catch(e=>console.error('[八卦搜索] 初始化失败',e));
+
+
+/* 0.1.18 UI refinements */
+(function(){
+  const css = `
+    [class*="custom-site"] p,[class*="custom-website"] p,.custom-site-hint,.custom-website-hint{white-space:pre-line!important}
+    .engine-item,.site-item,.p-site-item{display:flex!important;align-items:center!important;gap:8px!important}
+    .engine-item img,.site-item img,.p-site-item img{margin-top:0!important;flex:0 0 auto!important}
+    .engine-library .engine-item,.engine-library .site-item{margin-left:-14px!important;padding-left:0!important}
+    .engine-library input[type="checkbox"],.engine-library .engine-actions,.engine-library .site-actions{margin-left:-14px!important}
+    [class*="text-menu"],[class*="selection-menu"],[class*="search-menu"]{display:flex!important;align-items:center!important;background:#fff!important;border:1px solid #d9e2ec!important;border-radius:18px!important;padding:6px 10px!important;box-shadow:0 6px 18px rgba(15,23,42,.12)!important}
+    [class*="text-menu"] [class*="item"],[class*="selection-menu"] [class*="item"],[class*="search-menu"] [class*="item"]{width:30px!important;height:30px!important;border:1px solid #d9e2ec!important;border-radius:8px!important;display:flex!important;align-items:center!important;justify-content:center!important;transition:transform .15s ease!important}
+    [class*="text-menu"] [class*="item"]:hover,[class*="selection-menu"] [class*="item"]:hover,[class*="search-menu"] [class*="item"]:hover{transform:scale(1.18)!important}
+    .p-modal{position:fixed!important;z-index:999999!important}
+    .p-modal .panel-cats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+    .p-modal .panel-cats button{padding:10px;border-radius:10px;border:1px solid #d9e2ec;background:#fff;cursor:pointer}
+    .p-modal.draggable{cursor:move}
+    .bagua-panel-size{display:flex;align-items:center;gap:8px;margin-top:10px}
+    .bagua-panel-size input[type=range]{width:160px}
+  `;
+  const style = document.createElement('style');
+  style.textContent = css;
+  document.documentElement.appendChild(style);
+
+  const tencentIcon = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" rx="12" fill="#4285f4"/><text x="32" y="42" font-size="34" text-anchor="middle" fill="#fff">译</text></svg>');
+
+  const fixIcons = () => {
+    document.querySelectorAll('img').forEach(img => {
+      const label = [img.alt, img.title, img.getAttribute('aria-label')].join(' ');
+      if (label.includes('腾讯翻译')) img.src = tencentIcon;
+    });
+  };
+
+  const fixCustomText = () => {
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+    let node;
+    while ((node = walker.nextNode())) {
+      if (node.nodeValue.includes('输入填写网址，自动识别搜索规则。如果自动识别不成功，可以自行添加。')) {
+        node.nodeValue = '输入填写网址，自动识别搜索规则。\n如果自动识别不成功，可以自行添加。';
+      }
+    }
+  };
+
+  const makeDraggable = panel => {
+    if (panel.dataset.baguaDraggable) return;
+    panel.dataset.baguaDraggable = '1';
+    let dragging = false, startX = 0, startY = 0, originX = 0, originY = 0;
+    panel.addEventListener('pointerdown', event => {
+      if (event.target.closest('input,textarea,select,button,a')) return;
+      dragging = true;
+      panel.classList.add('draggable');
+      const rect = panel.getBoundingClientRect();
+      startX = event.clientX; startY = event.clientY;
+      originX = rect.left; originY = rect.top;
+      panel.setPointerCapture(event.pointerId);
+    });
+    panel.addEventListener('pointermove', event => {
+      if (!dragging) return;
+      const left = Math.max(0, Math.min(window.innerWidth - panel.offsetWidth, originX + event.clientX - startX));
+      const top = Math.max(0, Math.min(window.innerHeight - panel.offsetHeight, originY + event.clientY - startY));
+      panel.style.left = left + 'px';
+      panel.style.top = top + 'px';
+      panel.style.right = 'auto';
+      panel.style.bottom = 'auto';
+    });
+    panel.addEventListener('pointerup', () => {
+      dragging = false;
+      panel.classList.remove('draggable');
+    });
+  };
+
+  const addPanelSizeSetting = panel => {
+    if (!panel.textContent.includes('设置') || panel.querySelector('.bagua-panel-size')) return;
+    const wrap = document.createElement('label');
+    wrap.className = 'bagua-panel-size';
+    wrap.innerHTML = '<span>功能面板大小</span><input type="range" min="70" max="160" step="5">';
+    const input = wrap.querySelector('input');
+    const current = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--bagua-panel-scale')) || 1;
+    input.value = Math.round(current * 100);
+    input.addEventListener('input', () => {
+      document.documentElement.style.setProperty('--bagua-panel-scale', (input.value / 100).toFixed(3));
+    });
+    panel.appendChild(wrap);
+  };
+
+  const addPanelCategories = panel => {
+    if (!panel.textContent.includes('功能面板') || panel.querySelector('.panel-cats')) return;
+    const host = panel.querySelector('.p-site-list') || panel.querySelector('.p-grid') || panel.querySelector('.p-quick')?.parentElement;
+    if (!host) return;
+    const cats = document.createElement('div');
+    cats.className = 'panel-cats';
+    [['search','搜索引擎'],['video','视频搜索'],['music','音乐搜索'],['image','识图搜索'],['translate','翻译网站'],['general','综合搜索']].forEach(([kind,label]) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = label;
+      button.addEventListener('click', () => {
+        const tab = [...panel.querySelectorAll('button')].find(item => item.textContent.trim() === label);
+        if (tab) tab.click();
+      });
+      cats.appendChild(button);
+    });
+    host.insertBefore(cats, host.children[3] || null);
+  };
+
+  const patchPanels = () => {
+    document.querySelectorAll('.p-modal').forEach(panel => {
+      makeDraggable(panel);
+      addPanelSizeSetting(panel);
+      addPanelCategories(panel);
+    });
+  };
+
+  const queue = () => {
+    fixIcons();
+    fixCustomText();
+    patchPanels();
+  };
+
+  const start = () => {
+    queue();
+    new MutationObserver(() => setTimeout(queue, 50)).observe(document.documentElement, { childList: true, subtree: true });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start, { once: true });
+  } else {
+    start();
+  }
+})();
