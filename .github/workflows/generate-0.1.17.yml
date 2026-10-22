@@ -2,6 +2,9 @@ name: Generate 0.1.17
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 permissions:
   contents: write
