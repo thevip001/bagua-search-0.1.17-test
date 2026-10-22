@@ -1,0 +1,32 @@
+name: Generate 0.1.17
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout test repo
+        uses: actions/checkout@v4
+
+      - name: Checkout source repo
+        uses: actions/checkout@v4
+        with:
+          repository: thevip001/bagua-search
+          ref: main
+          path: source
+
+      - name: Generate 0.1.17
+        run: python3 scripts/generate_0_1_17.py
+
+      - name: Commit result
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add 八卦搜索.user.js
+          git diff --cached --quiet || git commit -m "chore: generate 0.1.17 test build"
+          git push
