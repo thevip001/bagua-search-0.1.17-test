@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 
 src = Path('source/八卦搜索.user.js')
 out = Path('八卦搜索.user.js')
@@ -8,6 +9,12 @@ text = text.replace('@version      0.1.16', '@version      0.1.17')
 marker = '// 0.1.17 test build generated from 0.1.16.'
 if marker not in text:
     text = marker + '\n' + text
+
+# Keep checkbox before label; simplify the drag description.
+text = re.sub(r'普通拖拽.*?不出搜索盘，按方向执行内圈功能并显示提示', '直接拖拽执行内圈功能', text, flags=re.S)
+
+# Rename top setting.
+text = text.replace('图形搜索盘', '拖拽搜索盘')
 
 # DEFAULT: add wheel colors and panel scale
 old_default = 'wheelScale:90,wheelGap:false,'
@@ -57,6 +64,7 @@ css2 = '''
 .input-search-tabs button.active{background:#25313d;color:#fff;border-color:#25313d;}
 .p-search-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;}
 .p-search-item{display:flex;align-items:center;gap:8px;padding:8px;border-radius:10px;background:#fff;border:1px solid #d9e2ec;cursor:pointer;}
+label:has(input[type="checkbox"]){display:flex;align-items:center;gap:6px;}
 '''
 assert css_marker in text
 text = text.replace(css_marker, css2 + '\n' + css_marker, 1)
